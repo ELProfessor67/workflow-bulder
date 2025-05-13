@@ -1,0 +1,89 @@
+FROM node:18.20.5-bullseye-slim
+
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+        openssh-client \
+        python3 \
+        g++ \
+        build-essential \
+        git \
+        poppler-utils \
+        poppler-data && \
+    yarn config set python /usr/bin/python3 && \
+    npm install -g node-gyp
+RUN npm i -g npm@9.9.3 pnpm@9.15.0
+
+# Set the locale
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+ENV NX_DAEMON=false
+
+
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
+    locales \
+    locales-all \
+    libcap-dev \
+ && rm -rf /var/lib/apt/lists/*
+
+ RUN cd /usr/src && npm i isolated-vm@5.0.1
+
+RUN pnpm store add @tsconfig/node18@1.0.0
+RUN pnpm store add @types/node@18.17.1
+
+RUN pnpm store add typescript@4.9.4
+
+WORKDIR /usr/src/app
+COPY . .
+
+COPY .npmrc package.json package-lock.json ./
+RUN npm ci
+
+RUN rm -rf .nx/cache
+RUN npx nx run-many --target=build --projects=server-api --configuration production
+RUN npx nx run-many --target=build --projects=react-ui
+
+
+RUN cd dist/packages/server/api && npm install --production --force
+
+
+
+COPY packages/server/api/src/assets/default.cf /usr/local/etc/isolate
+
+RUN apt-get update && apt-get install -y nginx gettext
+
+COPY nginx.react.conf /etc/nginx/nginx.conf
+
+COPY /usr/src/app/LICENSE .
+
+RUN mkdir -p /usr/src/app/dist/packages/server/
+RUN mkdir -p /usr/src/app/dist/packages/engine/
+RUN mkdir -p /usr/src/app/dist/packages/shared/
+
+# Copy Output files to appropriate directory from build stage
+COPY /usr/src/app/dist/packages/engine/ /usr/src/app/dist/packages/engine/
+COPY /usr/src/app/dist/packages/server/ /usr/src/app/dist/packages/server/
+COPY /usr/src/app/dist/packages/shared/ /usr/src/app/dist/packages/shared/
+
+RUN cd /usr/src/app/dist/packages/server/api/ && npm install --production --force
+
+# 
+# Copy Output files to appropriate directory from build stage
+COPY /usr/src/app/packages packages
+# Copy frontend files to Nginx document root directory from build stage
+COPY /usr/src/app/dist/packages/react-ui /usr/share/nginx/html/
+
+LABEL service=activepieces
+
+# Set up entrypoint script
+COPY docker-entrypoint.sh .
+RUN chmod +x docker-entrypoint.sh
+
+
+EXPOSE 80
+
+ENTRYPOINT ["./docker-entrypoint.sh"]
+
