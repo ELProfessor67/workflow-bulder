@@ -1,11 +1,11 @@
 version: '3.0'
 services:
   activepieces:
-    # image: ghcr.io/activepieces/activepieces:0.53.0
-    build: 
-      context: .
-      dockerfile: Dockerfile
-    mem_limit: 4g
+    image: test
+    # build: 
+    #   context: .
+    #   dockerfile: Dockerfile
+    # mem_limit: 4g
     container_name: activepieces
     restart: unless-stopped
     ## Enable the following line if you already use AP_EXECUTION_MODE with SANDBOXED or old activepieces, checking the breaking change documentation for more info.

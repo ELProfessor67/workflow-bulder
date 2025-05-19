@@ -1,5 +1,5 @@
-FROM node:20-bullseye-slim AS base
-# FROM node:18.20.5-bullseye-slim AS base
+# FROM node:20-bullseye-slim AS base
+FROM node:18.20.5-bullseye-slim AS base
 
 # Use a cache mount for apt to speed up the process
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
@@ -51,7 +51,7 @@ COPY . .
 
 
 COPY .npmrc package.json package-lock.json ./
-RUN npm ci
+RUN npm i
 
 # RUN npx nx reset
 RUN rm -rf .nx/cache
@@ -105,6 +105,5 @@ RUN chmod +x ./docker-entrypoint.sh
 
 
 EXPOSE 80
-# CMD nginx -g "daemon off;" & node --enable-source-maps /usr/src/app/dist/packages/server/api/main.js
-CMD ["./docker-entrypoint.sh"]
+CMD nginx -g "daemon off;" & node --enable-source-maps /usr/src/app/dist/packages/server/api/main.js
 

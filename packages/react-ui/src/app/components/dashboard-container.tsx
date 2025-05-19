@@ -126,9 +126,9 @@ export function DashboardContainer({
   const items: SidebarItem[] = [
     flowsLink,
     releasesLink,
-    mcpLink,
-    tablesLink,
-    todosLink,
+    // mcpLink,
+    // tablesLink,
+    // todosLink,
   ]
     .filter(embedFilter)
     .filter(permissionFilter)
