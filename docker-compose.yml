@@ -2,9 +2,10 @@ version: '3.0'
 services:
   activepieces:
     # image: test
-    build: 
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/activepieces/activepieces:0.56.0
+    # build: 
+    #   context: .
+    #   dockerfile: Dockerfile
     # mem_limit: 4g
     container_name: activepieces
     restart: unless-stopped
