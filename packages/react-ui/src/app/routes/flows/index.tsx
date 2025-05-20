@@ -145,7 +145,7 @@ const FlowsPage = () => {
                   {t('Runs')}
                 </TabsTrigger>
               )}
-              {checkAccess(Permission.READ_ISSUES) && (
+             {/* {checkAccess(Permission.READ_ISSUES) && (
                 <TabsTrigger value={FlowsPageTabs.ISSUES} variant="outline">
                   <CircleAlert className="h-4 w-4 mr-2" />
                   <span className="flex items-center gap-2">
@@ -155,7 +155,7 @@ const FlowsPage = () => {
                     )}
                   </span>
                 </TabsTrigger>
-              )}
+              )} */}
             </TabsList>
           ) : (
             <></>
@@ -239,7 +239,7 @@ const CreateFlowDropdown = ({ refetch }: CreateFlowDropdownProps) => {
             <Plus className="h-4 w-4 me-2" />
             <span>{t('From scratch')}</span>
           </DropdownMenuItem>
-          <SelectFlowTemplateDialog>
+          {/* <SelectFlowTemplateDialog>
             <DropdownMenuItem
               onSelect={(e) => e.preventDefault()}
               disabled={isCreateFlowPending}
@@ -247,7 +247,7 @@ const CreateFlowDropdown = ({ refetch }: CreateFlowDropdownProps) => {
               <Workflow className="h-4 w-4 me-2" />
               <span>{t('Use a template')}</span>
             </DropdownMenuItem>
-          </SelectFlowTemplateDialog>
+          </SelectFlowTemplateDialog> */}
 
           <ImportFlowDialog
             insideBuilder={false}
